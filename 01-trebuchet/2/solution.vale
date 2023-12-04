@@ -1,0 +1,58 @@
+import stdlib.path.*;
+
+func find_number(line StrSlice) int {
+    first_digit = -1;
+    second_digit = -1;
+    i = 0;
+    while i < line.len() {
+        ascii = line.charAt(i).toAscii();
+        if ascii >= 48 and ascii <= 57 {
+            if first_digit == -1 {
+                set first_digit = ascii;
+            } else {
+                set second_digit = ascii;
+            }
+        } else {
+            s = slice(line, i);
+            n =  if s.startsWith("one")   { 49 }
+            else if s.startsWith("two")   { 50 }
+            else if s.startsWith("three") { 51 }
+            else if s.startsWith("four")  { 52 }
+            else if s.startsWith("five")  { 53 }
+            else if s.startsWith("six")   { 54 }
+            else if s.startsWith("seven") { 55 }
+            else if s.startsWith("eight") { 56 }
+            else if s.startsWith("nine")  { 57 }
+            else { -1 };
+
+            if n != -1 {
+                if first_digit == -1 {
+                    set first_digit = n;
+                } else {
+                    set second_digit = n;
+                }
+            }
+        }
+        set i = i + 1;
+    }
+    vassert(first_digit != -1, "line should contain atleast one digit");
+    first = fromAscii(first_digit);
+    num_string = first + (if second_digit == -1 { first } else { fromAscii(second_digit) });
+    return int(num_string).get();
+}
+
+exported func main() {
+    if numMainArgs() < 2 {
+        vassert(false, "input path not found");
+    }
+    input_filepath = getMainArg(1);
+    input = readAsString(&Path(input_filepath));
+    lines = input.split("\n");
+    sum = 0;
+    foreach line in lines {
+        if line != "" {
+            set sum = sum + find_number(line);
+        }
+    }
+    println("{sum}");
+}
